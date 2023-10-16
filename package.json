@@ -1,0 +1,16 @@
+{
+  "name": "aws-go-sdk-mock",
+  "version": "1.0.0",
+  "description": "This project does not work like the terraform aws provider to actually manage resources. Instead it acts to mock the provider so that you can implement the API on it or inspect calls that are made.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "zx misc/scripts/install.zx.js",
+    "gen:patch": "cd mod/aws/aws-sdk-go && git diff > ../../../.patches/mod/aws/aws-sdk-go/aws-sdk-go.patch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "zx": "^7.2.2"
+  }
+}
