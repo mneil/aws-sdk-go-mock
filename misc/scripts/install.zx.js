@@ -24,8 +24,8 @@ async function git(dir, repo, ref, files = []) {
 
 async function cloneAwsSdkV1(ref) {
   // 6b43f9d073a68f8f4c5e5f6c273955730fe6bda4
-  await $`rm -rf mod/aws/aws-sdk-go`;
-  await git("mod/aws/aws-sdk-go", "aws/aws-sdk-go", ref, [
+  await $`rm -rf aws/aws-sdk-go`;
+  await git("aws/aws-sdk-go", "aws/aws-sdk-go", ref, [
     // "go.mod",
     // "models",
     // "Gopkg.lock",
@@ -49,8 +49,8 @@ async function cloneAwsSdkV1(ref) {
 
 // v1 and v2 because why not?
 async function cloneAwsSdkV2(ref) {
-  await $`rm -rf mod/aws/aws-sdk-go-v2`;
-  await git("mod/aws/aws-sdk-go-v2", "aws/aws-sdk-go-v2", ref, [
+  await $`rm -rf aws/aws-sdk-go-v2`;
+  await git("aws/aws-sdk-go-v2", "aws/aws-sdk-go-v2", ref, [
     // "codegen",
     // "feature",
     // "config",
@@ -95,7 +95,7 @@ async function applyPatches(patchBaseDir, toPatch = "") {
 
 async function finalizeClone() {
   // TODO: this isn't working. zx sanitizing it?
-  await $`rm -rf mod/**/*_test.go`;
+  await $`rm -rf aws/**/*_test.go`;
 
   await applyPatches(path.resolve(__dirname, "..", "..", ".patches"));
 }
@@ -108,6 +108,7 @@ async function install() {
   ]);
   await finalizeClone()
   await $`go mod tidy`
+  await $`ln -fs $PWD/src/mock.go $PWD/aws/aws-sdk-go/aws/request/mock.go`
 }
 
 install()

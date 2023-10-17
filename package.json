@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "zx misc/scripts/install.zx.js",
-    "gen:patch": "cd mod/aws/aws-sdk-go && git diff > ../../../.patches/mod/aws/aws-sdk-go/aws-sdk-go.patch"
+    "gen:patch": "cd aws/aws-sdk-go && git diff aws/request/request.go > ../../../.patches/aws/aws-sdk-go/aws-sdk-go.patch"
   },
   "author": "",
   "license": "ISC",

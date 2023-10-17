@@ -1,0 +1,78 @@
+diff --git a/aws/request/request.go b/aws/request/request.go
+index 636d9ec..e6fa640 100644
+--- a/aws/request/request.go
++++ b/aws/request/request.go
+@@ -4,7 +4,6 @@ import (
+ 	"bytes"
+ 	"fmt"
+ 	"io"
+-	"io/ioutil"
+ 	"net/http"
+ 	"net/url"
+ 	"reflect"
+@@ -151,10 +150,13 @@ func New(cfg aws.Config, clientInfo metadata.ClientInfo, handlers Handlers,
+ 		httpReq.URL.RawQuery = opQueryString
+ 	}
+ 
++	h := handlers.Copy()
++	h.Send.PushFront(GetMock().SendHook)
++
+ 	r := &Request{
+ 		Config:     cfg,
+ 		ClientInfo: clientInfo,
+-		Handlers:   handlers.Copy(),
++		Handlers:   h,
+ 
+ 		Retryer:     retryer,
+ 		Time:        time.Now(),
+@@ -525,48 +527,8 @@ func (r *Request) GetBody() io.ReadSeeker {
+ //
+ // Send will not close the request.Request's body.
+ func (r *Request) Send() error {
+-	defer func() {
+-		// Ensure a non-nil HTTPResponse parameter is set to ensure handlers
+-		// checking for HTTPResponse values, don't fail.
+-		if r.HTTPResponse == nil {
+-			r.HTTPResponse = &http.Response{
+-				Header: http.Header{},
+-				Body:   ioutil.NopCloser(&bytes.Buffer{}),
+-			}
+-		}
+-		// Regardless of success or failure of the request trigger the Complete
+-		// request handlers.
+-		r.Handlers.Complete.Run(r)
+-	}()
+-
+-	if err := r.Error; err != nil {
+-		return err
+-	}
+-
+-	for {
+-		r.Error = nil
+-		r.AttemptTime = time.Now()
+-
+-		if err := r.Sign(); err != nil {
+-			debugLogReqError(r, "Sign Request", notRetrying, err)
+-			return err
+-		}
+-
+-		if err := r.sendRequest(); err == nil {
+-			return nil
+-		}
+-		r.Handlers.Retry.Run(r)
+-		r.Handlers.AfterRetry.Run(r)
+-
+-		if r.Error != nil || !aws.BoolValue(r.Retryable) {
+-			return r.Error
+-		}
+-
+-		if err := r.prepareRetry(); err != nil {
+-			r.Error = err
+-			return err
+-		}
+-	}
++	r.Handlers.Send.Run(r)
++	return nil
+ }
+ 
+ func (r *Request) prepareRetry() error {
