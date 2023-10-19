@@ -26,6 +26,12 @@ func main() {
 		os.Exit(1)
 	}
 }
+type Rando struct {
+	BucketKeyEnabled *bool
+	SSEKMSKeyId *string
+	SomethingWeird *string
+}
+
 func run(bucket string, key string, timeout time.Duration) error {
 
 	// All clients require a Session. The Session provides the client with
@@ -42,9 +48,10 @@ func run(bucket string, key string, timeout time.Duration) error {
 	svc := s3.New(sess)
 
 	mock := request.GetMock()
-	mock.On("s3", "PutObject").Return(func(d interface{}) {
-		// do the thing, modify mock data
-	})
+	mock.On("s3", "PutObject").Return(&Rando{BucketKeyEnabled: aws.Bool(true), SSEKMSKeyId: aws.String("ABC")})
+	mock.On("s3", "PutObject").Return(&Rando{BucketKeyEnabled: aws.Bool(false), SomethingWeird: aws.String("Value")})
+	// mock.On("*", "*").Return(&s3.PutObjectOutput{})
+
 
 	// svc.Handlers.Send.PushFront(func (r *request.Request) {
 	// 	fmt.Printf("%s\n", r.Operation.Name)
@@ -67,11 +74,12 @@ func run(bucket string, key string, timeout time.Duration) error {
 
 	// Uploads the object to S3. The Context will interrupt the request if the
 	// timeout expires.
-	_, err := svc.PutObjectWithContext(ctx, &s3.PutObjectInput{
+	r, err := svc.PutObjectWithContext(ctx, &s3.PutObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
 		Body:   os.Stdin,
 	})
+	fmt.Printf("Returned BucketKeyEnabled:%t, SSEKMSKeyId: %s\n", *r.BucketKeyEnabled, *r.SSEKMSKeyId)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == request.CanceledErrorCode {
 			// If the SDK can determine the request or retry delay was canceled

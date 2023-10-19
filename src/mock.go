@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+
+	"github.com/jinzhu/copier"
 )
 
 type call struct {
@@ -11,8 +13,11 @@ type call struct {
 	Method string
 	Arguments []interface{}
 	Response interface{}
+	Run func(*Request)
+	onlyOnce bool
 }
 
+// When matches calls only when specific arguments are passed to the service and method
 func (c *call) When(arguments ...interface{}) *call {
 	for _, arg := range arguments {
 		if v := reflect.ValueOf(arg); v.Kind() == reflect.Func {
@@ -22,8 +27,22 @@ func (c *call) When(arguments ...interface{}) *call {
 	c.Arguments = arguments
 	return c
 }
-func (c *call) Return(d interface{}) {
+// Return accepts a struct to return as the value to the call
+func (c *call) Return(d interface{}) *call {
 	c.Response = d
+	return c
+}
+
+func (c *call) Do(r func(*Request)) *call {
+	c.Run = r
+	return c
+}
+func (c *call) Once() *call {
+	c.onlyOnce = true
+	return c
+}
+func (c *call) IsOnce() bool {
+	return c.onlyOnce
 }
 
 type mock struct {
@@ -33,6 +52,7 @@ type mock struct {
 var instance *mock
 var once sync.Once
 
+// GetMock returns a thread safe mock struct singleton to intercept calls
 func GetMock() *mock {
 	once.Do(func() {
 			instance = &mock{
@@ -42,19 +62,48 @@ func GetMock() *mock {
 	return instance
 }
 
+func getType(t interface{}) reflect.Type {
+	v := reflect.ValueOf(t)
+	if reflect.TypeOf(t).Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	return v.Type()
+}
+
 func (m *mock) SendHook (r *Request) {
 	fmt.Printf("service: %s, operation: %s\n", r.ClientInfo.ServiceName, r.Operation.Name)
 	// TODO: Record every operation
-
-	if _, ok := m.ExpectedCalls[r.ClientInfo.ServiceName]; !ok {
-		return
+  calls := []*call{}
+	if _, ok := m.ExpectedCalls["*"]; ok {
+		// pattern match *.*
+		if c, ok := m.ExpectedCalls["*"]["*"]; ok {
+			calls = append(calls, c...)
+		}
 	}
-	if _, ok := m.ExpectedCalls[r.ClientInfo.ServiceName][r.Operation.Name]; !ok {
-		return
+	if _, ok := m.ExpectedCalls[r.ClientInfo.ServiceName]; ok {
+		if c, ok := m.ExpectedCalls[r.ClientInfo.ServiceName][r.Operation.Name]; ok {
+			calls = append(calls, c...)
+		}
+		// pattern match Service.*
+		if c, ok := m.ExpectedCalls[r.ClientInfo.ServiceName]["*"]; ok {
+			calls = append(calls, c...)
+		}
 	}
-	for _, call := range  m.ExpectedCalls[r.ClientInfo.ServiceName][r.Operation.Name] {
-		fmt.Print(call)
+	for _, call := range calls {
+		if call.Response != nil {
+			m.Copy(call.Response, r.Data)
+			// if call.IsOnce() {
+			// 	// TODO: Remove from the expected call list on the mock forever
+			// }
+		}
+		if call.Run !=  nil {
+			call.Run(r)
+		}
 	}
+}
+// Copy deep copies from one interface to the other. Ignores nil fields and fields that do not exist in target (to). Target must be a pointer
+func (m *mock) Copy(from interface{}, to interface{}) {
+	copier.CopyWithOption(to, from, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 }
 
 func (m *mock) On(serviceName string, methodName string) *call {

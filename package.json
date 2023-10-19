@@ -4,13 +4,16 @@
   "description": "This project does not work like the terraform aws provider to actually manage resources. Instead it acts to mock the provider so that you can implement the API on it or inspect calls that are made.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "zx misc/scripts/build.zx.js",
+    "gen:patch": "cd aws/aws-sdk-go && git diff aws/request/request.go > ../../../.patches/aws/aws-sdk-go/aws-sdk-go.patch",
     "install": "zx misc/scripts/install.zx.js",
-    "gen:patch": "cd aws/aws-sdk-go && git diff aws/request/request.go > ../../../.patches/aws/aws-sdk-go/aws-sdk-go.patch"
+    "serve": "http-server dist -p 8000",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "http-server": "^14.1.1",
     "zx": "^7.2.2"
   }
 }
