@@ -9,4 +9,8 @@ require (
 	github.com/jinzhu/copier v0.4.0
 )
 
-require github.com/jmespath/go-jmespath v0.4.0 // indirect
+require (
+	github.com/go-faker/faker/v4 v4.2.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
+)

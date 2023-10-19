@@ -74,12 +74,18 @@ func run(bucket string, key string, timeout time.Duration) error {
 
 	// Uploads the object to S3. The Context will interrupt the request if the
 	// timeout expires.
-	r, err := svc.PutObjectWithContext(ctx, &s3.PutObjectInput{
+	// r, err := svc.PutObjectWithContext(ctx, &s3.PutObjectInput{
+	// 	Bucket: aws.String(bucket),
+	// 	Key:    aws.String(key),
+	// 	Body:   os.Stdin,
+	// })
+	// r, err := svc.CreateBucketWithContext(ctx, &s3.CreateBucketInput{
+	// 	Bucket: aws.String(bucket),
+	// })
+	r, err := svc.GetBucketAclWithContext(ctx, &s3.GetBucketAclInput{
 		Bucket: aws.String(bucket),
-		Key:    aws.String(key),
-		Body:   os.Stdin,
 	})
-	fmt.Printf("Returned BucketKeyEnabled:%t, SSEKMSKeyId: %s\n", *r.BucketKeyEnabled, *r.SSEKMSKeyId)
+	fmt.Printf("Returned %+v\n", *r)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == request.CanceledErrorCode {
 			// If the SDK can determine the request or retry delay was canceled
