@@ -1,46 +1,29 @@
-// File really does nothing. We're patching the aws sdk. This is purely a "test" entrypoint
-package main
+package request
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"os"
+	"testing"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-func main() {
-	var bucket, key string
-	var timeout time.Duration
+func TestMain(t *testing.T) {
 
-	flag.StringVar(&bucket, "b", "", "Bucket name.")
-	flag.StringVar(&key, "k", "", "Object key name.")
-	flag.DurationVar(&timeout, "d", 0, "Upload timeout.")
-	flag.Parse()
-	if err := run(bucket, key, timeout); err != nil{
-		os.Exit(1)
-	}
-}
-type Rando struct {
-	BucketKeyEnabled *bool
-	SSEKMSKeyId *string
-	SomethingWeird *string
-}
-
-func run(bucket string, key string, timeout time.Duration) error {
+	bucket := "foo"
+	// key := bar
+	timeout := time.Duration(0)
 
 	// All clients require a Session. The Session provides the client with
  	// shared configuration such as region, endpoint, and credentials. A
  	// Session should be shared where possible to take advantage of
  	// configuration and credential caching. See the session package for
  	// more information.
-	sess := session.Must(session.NewSession())
+	 sess := session.Must(session.NewSession())
 
  	// Create a new instance of the service's client with a Session.
  	// Optional aws.Config values can also be provided as variadic arguments
@@ -51,9 +34,6 @@ func run(bucket string, key string, timeout time.Duration) error {
 	mock := request.GetMock()
 	mock.On("s3", "PutObject").Return(&Rando{BucketKeyEnabled: aws.Bool(true), SSEKMSKeyId: aws.String("ABC")})
 	mock.On("s3", "PutObject").Return(&Rando{BucketKeyEnabled: aws.Bool(false), SomethingWeird: aws.String("Value")})
-	// mock.On("*", "*").Do(func (r *request.Request) {
-	// 	// call my jsfun with args
-	// })
 	// mock.On("*", "*").Return(&s3.PutObjectOutput{})
 
 
@@ -78,28 +58,26 @@ func run(bucket string, key string, timeout time.Duration) error {
 
 	// Uploads the object to S3. The Context will interrupt the request if the
 	// timeout expires.
-	r, err := svc.PutObjectWithContext(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(key),
-		Body:   os.Stdin,
-	})
+	// r, err := svc.PutObjectWithContext(ctx, &s3.PutObjectInput{
+	// 	Bucket: aws.String(bucket),
+	// 	Key:    aws.String(key),
+	// 	Body:   os.Stdin,
+	// })
 	// r, err := svc.CreateBucketWithContext(ctx, &s3.CreateBucketInput{
 	// 	Bucket: aws.String(bucket),
 	// })
-	// r, err := svc.GetBucketAclWithContext(ctx, &s3.GetBucketAclInput{
-	// 	Bucket: aws.String(bucket),
-	// })
+	r, err := svc.GetBucketAclWithContext(ctx, &s3.GetBucketAclInput{
+		Bucket: aws.String(bucket),
+	})
 	fmt.Printf("Returned %+v\n", *r)
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == request.CanceledErrorCode {
-			// If the SDK can determine the request or retry delay was canceled
-			// by a context the CanceledErrorCode error code will be returned.
-			return fmt.Errorf("upload canceled due to timeout, %v", err)
-		} else {
-			return fmt.Errorf("failed to upload object, %v", err)
-		}
+		t.Fatalf(`TestMock, %v, want nil`, err)
 	}
-
-	fmt.Printf("successfully uploaded file to %s/%s\n", bucket, key)
-	return nil
 }
+
+type Rando struct {
+	BucketKeyEnabled *bool
+	SSEKMSKeyId *string
+	SomethingWeird *string
+}
+

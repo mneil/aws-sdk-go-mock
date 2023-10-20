@@ -1,3 +1,4 @@
+
 async function git(dir, repo, ref, files = []) {
   console.log(`pulling ${files.join(" ")} from ${repo} into ${dir}`);
   await $`mkdir -p ${dir}`;
@@ -24,46 +25,13 @@ async function git(dir, repo, ref, files = []) {
 
 async function cloneAwsSdkV1(ref) {
   // 6b43f9d073a68f8f4c5e5f6c273955730fe6bda4
-  await $`rm -rf aws/aws-sdk-go`;
-  await git("aws/aws-sdk-go", "aws/aws-sdk-go", ref, [
-    // "go.mod",
-    // "models",
-    // "Gopkg.lock",
-    // "aws",
-    // "doc.go",
-    // "go.sum",
-    // "private",
-    // "Gopkg.toml",
-    // "awstesting",
-    // // "example",
-    // "internal",
-    // "service/ec2",
-    // "service/generate.go",
-    // "service/iam",
-    // "service/s3",
-    // "service/sso",
-    // "service/ssooidc",
-    // "service/sts",
-  ]);
+  // await $`rm -rf aws/aws-sdk-go`;
+  await git("aws/aws-sdk-go", "aws/aws-sdk-go", ref, []);
 }
 
-// v1 and v2 because why not?
 async function cloneAwsSdkV2(ref) {
   await $`rm -rf aws/aws-sdk-go-v2`;
-  await git("aws/aws-sdk-go-v2", "aws/aws-sdk-go-v2", ref, [
-    // "codegen",
-    // "feature",
-    // "config",
-    // "go.mod",
-    // "aws",
-    // "credentials",
-    // "go.sum",
-    // "doc.go",
-    // "internal",
-    // "!service",
-    // "service/ec2",
-    // "service/s3",
-  ]);
+  await git("aws/aws-sdk-go-v2", "aws/aws-sdk-go-v2", ref, []);
 }
 
 /**
@@ -95,20 +63,59 @@ async function applyPatches(patchBaseDir, toPatch = "") {
 
 async function finalizeClone() {
   // TODO: this isn't working. zx sanitizing it?
-  await $`rm -rf aws/**/*_test.go`;
-
+  // await $`rm -rf aws/**/*_test.go`;
+  await clean(["aws/**/*_test.go", "!aws/**/asg_*_test.go"]);
   await applyPatches(path.resolve(__dirname, "..", "..", ".patches"));
 }
 
+async function clean(pattern) {
+  const files = await glob(pattern, {
+    // onlyDirectories: true,
+    onlyFiles: false,
+    // expandDirectories: true,
+    objectMode: true,
+    dot: true,
+  });
+  return await Promise.all(files.map((f) => {
+    let rmCmd = fs.rm;
+    let options = {};
+    if(f.dirent.isDirectory()) {
+      rmCmd = fs.rmdir;
+      if(!["aws", "aws/aws-sdk-go", "aws/aws-sdk-go/aws", "aws/aws-sdk-go/aws/request"].includes(f.path) ) {
+        options.recursive = true;
+      }
+    }
+    return new Promise((resolve, reject) => {
+      rmCmd(f.path, options, (err) => {
+        if(err && err.code != "ENOTEMPTY") {
+          return reject(err)
+        }
+        return resolve();
+      });
+    });
+  }));
+}
+
+async function installDeps() {
+  await within(async () => {
+    cd("aws/aws-sdk-go");
+    await $`go get github.com/go-faker/faker/v4`
+    await $`go get github.com/jinzhu/copier`
+  });
+
+}
 
 async function install() {
+  await clean(["aws/**", "!aws/**/asg_mock*.go"]);
   await Promise.all([
     cloneAwsSdkV1("v1.45.25"),
     // cloneAwsSdkV2("4599f78694cabb6853addabc6f92cb197fdb5647")
   ]);
   await finalizeClone()
+  await installDeps()
   await $`go mod tidy`
   await $`ln -fs $PWD/src/mock.go $PWD/aws/aws-sdk-go/aws/request/mock.go`
+  await $`ln -fs $PWD/src/mock_test.go $PWD/aws/aws-sdk-go/aws/request/mock_test.go`
 }
 
 install()
