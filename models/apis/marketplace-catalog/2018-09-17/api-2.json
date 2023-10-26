@@ -1,0 +1,1249 @@
+{
+  "metadata": {
+    "apiVersion": "2018-09-17",
+    "endpointPrefix": "catalog.marketplace",
+    "jsonVersion": "1.1",
+    "protocol": "rest-json",
+    "serviceAbbreviation": "AWS Marketplace Catalog",
+    "serviceFullName": "AWS Marketplace Catalog Service",
+    "serviceId": "Marketplace Catalog",
+    "signatureVersion": "v4",
+    "signingName": "aws-marketplace",
+    "uid": "marketplace-catalog-2018-09-17"
+  },
+  "operations": {
+    "CancelChangeSet": {
+      "errors": [
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "ResourceInUseException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "PATCH",
+        "requestUri": "/CancelChangeSet"
+      },
+      "input": {
+        "shape": "CancelChangeSetRequest"
+      },
+      "name": "CancelChangeSet",
+      "output": {
+        "shape": "CancelChangeSetResponse"
+      }
+    },
+    "DeleteResourcePolicy": {
+      "errors": [
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "DELETE",
+        "requestUri": "/DeleteResourcePolicy"
+      },
+      "input": {
+        "shape": "DeleteResourcePolicyRequest"
+      },
+      "name": "DeleteResourcePolicy",
+      "output": {
+        "shape": "DeleteResourcePolicyResponse"
+      }
+    },
+    "DescribeChangeSet": {
+      "errors": [
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "GET",
+        "requestUri": "/DescribeChangeSet"
+      },
+      "input": {
+        "shape": "DescribeChangeSetRequest"
+      },
+      "name": "DescribeChangeSet",
+      "output": {
+        "shape": "DescribeChangeSetResponse"
+      }
+    },
+    "DescribeEntity": {
+      "errors": [
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ResourceNotSupportedException"
+        },
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "GET",
+        "requestUri": "/DescribeEntity"
+      },
+      "input": {
+        "shape": "DescribeEntityRequest"
+      },
+      "name": "DescribeEntity",
+      "output": {
+        "shape": "DescribeEntityResponse"
+      }
+    },
+    "GetResourcePolicy": {
+      "errors": [
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "GET",
+        "requestUri": "/GetResourcePolicy"
+      },
+      "input": {
+        "shape": "GetResourcePolicyRequest"
+      },
+      "name": "GetResourcePolicy",
+      "output": {
+        "shape": "GetResourcePolicyResponse"
+      }
+    },
+    "ListChangeSets": {
+      "errors": [
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "POST",
+        "requestUri": "/ListChangeSets"
+      },
+      "input": {
+        "shape": "ListChangeSetsRequest"
+      },
+      "name": "ListChangeSets",
+      "output": {
+        "shape": "ListChangeSetsResponse"
+      }
+    },
+    "ListEntities": {
+      "errors": [
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "POST",
+        "requestUri": "/ListEntities"
+      },
+      "input": {
+        "shape": "ListEntitiesRequest"
+      },
+      "name": "ListEntities",
+      "output": {
+        "shape": "ListEntitiesResponse"
+      }
+    },
+    "ListTagsForResource": {
+      "errors": [
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "POST",
+        "requestUri": "/ListTagsForResource"
+      },
+      "input": {
+        "shape": "ListTagsForResourceRequest"
+      },
+      "name": "ListTagsForResource",
+      "output": {
+        "shape": "ListTagsForResourceResponse"
+      }
+    },
+    "PutResourcePolicy": {
+      "errors": [
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "POST",
+        "requestUri": "/PutResourcePolicy"
+      },
+      "input": {
+        "shape": "PutResourcePolicyRequest"
+      },
+      "name": "PutResourcePolicy",
+      "output": {
+        "shape": "PutResourcePolicyResponse"
+      }
+    },
+    "StartChangeSet": {
+      "errors": [
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "ResourceInUseException"
+        },
+        {
+          "shape": "ThrottlingException"
+        },
+        {
+          "shape": "ServiceQuotaExceededException"
+        }
+      ],
+      "http": {
+        "method": "POST",
+        "requestUri": "/StartChangeSet"
+      },
+      "input": {
+        "shape": "StartChangeSetRequest"
+      },
+      "name": "StartChangeSet",
+      "output": {
+        "shape": "StartChangeSetResponse"
+      }
+    },
+    "TagResource": {
+      "errors": [
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "POST",
+        "requestUri": "/TagResource"
+      },
+      "input": {
+        "shape": "TagResourceRequest"
+      },
+      "name": "TagResource",
+      "output": {
+        "shape": "TagResourceResponse"
+      }
+    },
+    "UntagResource": {
+      "errors": [
+        {
+          "shape": "ResourceNotFoundException"
+        },
+        {
+          "shape": "InternalServiceException"
+        },
+        {
+          "shape": "AccessDeniedException"
+        },
+        {
+          "shape": "ValidationException"
+        },
+        {
+          "shape": "ThrottlingException"
+        }
+      ],
+      "http": {
+        "method": "POST",
+        "requestUri": "/UntagResource"
+      },
+      "input": {
+        "shape": "UntagResourceRequest"
+      },
+      "name": "UntagResource",
+      "output": {
+        "shape": "UntagResourceResponse"
+      }
+    }
+  },
+  "shapes": {
+    "ARN": {
+      "max": 2048,
+      "min": 1,
+      "pattern": "^[a-zA-Z0-9:*/-]+$",
+      "type": "string"
+    },
+    "AccessDeniedException": {
+      "error": {
+        "httpStatusCode": 403
+      },
+      "exception": true,
+      "members": {
+        "Message": {
+          "shape": "ExceptionMessageContent"
+        }
+      },
+      "synthetic": true,
+      "type": "structure"
+    },
+    "CancelChangeSetRequest": {
+      "members": {
+        "Catalog": {
+          "location": "querystring",
+          "locationName": "catalog",
+          "shape": "Catalog"
+        },
+        "ChangeSetId": {
+          "location": "querystring",
+          "locationName": "changeSetId",
+          "shape": "ResourceId"
+        }
+      },
+      "required": [
+        "Catalog",
+        "ChangeSetId"
+      ],
+      "type": "structure"
+    },
+    "CancelChangeSetResponse": {
+      "members": {
+        "ChangeSetArn": {
+          "shape": "ARN"
+        },
+        "ChangeSetId": {
+          "shape": "ResourceId"
+        }
+      },
+      "type": "structure"
+    },
+    "Catalog": {
+      "max": 64,
+      "min": 1,
+      "pattern": "^[a-zA-Z]+$",
+      "type": "string"
+    },
+    "Change": {
+      "members": {
+        "ChangeName": {
+          "shape": "ChangeName"
+        },
+        "ChangeType": {
+          "shape": "ChangeType"
+        },
+        "Details": {
+          "shape": "Json"
+        },
+        "Entity": {
+          "shape": "Entity"
+        },
+        "EntityTags": {
+          "shape": "TagList"
+        }
+      },
+      "required": [
+        "ChangeType",
+        "Entity"
+      ],
+      "type": "structure"
+    },
+    "ChangeName": {
+      "max": 72,
+      "min": 1,
+      "pattern": "^[a-zA-Z]$",
+      "type": "string"
+    },
+    "ChangeSetDescription": {
+      "member": {
+        "shape": "ChangeSummary"
+      },
+      "type": "list"
+    },
+    "ChangeSetName": {
+      "max": 100,
+      "min": 1,
+      "pattern": "^[\\w\\s+=.:@-]+$",
+      "type": "string"
+    },
+    "ChangeSetSummaryList": {
+      "member": {
+        "shape": "ChangeSetSummaryListItem"
+      },
+      "type": "list"
+    },
+    "ChangeSetSummaryListItem": {
+      "members": {
+        "ChangeSetArn": {
+          "shape": "ARN"
+        },
+        "ChangeSetId": {
+          "shape": "ResourceId"
+        },
+        "ChangeSetName": {
+          "shape": "ChangeSetName"
+        },
+        "EndTime": {
+          "shape": "DateTimeISO8601"
+        },
+        "EntityIdList": {
+          "shape": "ResourceIdList"
+        },
+        "FailureCode": {
+          "shape": "FailureCode"
+        },
+        "StartTime": {
+          "shape": "DateTimeISO8601"
+        },
+        "Status": {
+          "shape": "ChangeStatus"
+        }
+      },
+      "type": "structure"
+    },
+    "ChangeStatus": {
+      "enum": [
+        "PREPARING",
+        "APPLYING",
+        "SUCCEEDED",
+        "CANCELLED",
+        "FAILED"
+      ],
+      "type": "string"
+    },
+    "ChangeSummary": {
+      "members": {
+        "ChangeName": {
+          "shape": "ChangeName"
+        },
+        "ChangeType": {
+          "shape": "ChangeType"
+        },
+        "Details": {
+          "shape": "Json"
+        },
+        "Entity": {
+          "shape": "Entity"
+        },
+        "ErrorDetailList": {
+          "shape": "ErrorDetailList"
+        }
+      },
+      "type": "structure"
+    },
+    "ChangeType": {
+      "max": 255,
+      "min": 1,
+      "pattern": "^[A-Z][\\w]*$",
+      "type": "string"
+    },
+    "ClientRequestToken": {
+      "max": 64,
+      "min": 1,
+      "pattern": "^[!-~]+$",
+      "type": "string"
+    },
+    "DateTimeISO8601": {
+      "max": 20,
+      "min": 20,
+      "pattern": "^([\\d]{4})\\-(1[0-2]|0[1-9])\\-(3[01]|0[1-9]|[12][\\d])T(2[0-3]|[01][\\d]):([0-5][\\d]):([0-5][\\d])Z$",
+      "type": "string"
+    },
+    "DeleteResourcePolicyRequest": {
+      "members": {
+        "ResourceArn": {
+          "location": "querystring",
+          "locationName": "resourceArn",
+          "shape": "ResourceARN"
+        }
+      },
+      "required": [
+        "ResourceArn"
+      ],
+      "type": "structure"
+    },
+    "DeleteResourcePolicyResponse": {
+      "members": {},
+      "type": "structure"
+    },
+    "DescribeChangeSetRequest": {
+      "members": {
+        "Catalog": {
+          "location": "querystring",
+          "locationName": "catalog",
+          "shape": "Catalog"
+        },
+        "ChangeSetId": {
+          "location": "querystring",
+          "locationName": "changeSetId",
+          "shape": "ResourceId"
+        }
+      },
+      "required": [
+        "Catalog",
+        "ChangeSetId"
+      ],
+      "type": "structure"
+    },
+    "DescribeChangeSetResponse": {
+      "members": {
+        "ChangeSet": {
+          "shape": "ChangeSetDescription"
+        },
+        "ChangeSetArn": {
+          "shape": "ARN"
+        },
+        "ChangeSetId": {
+          "shape": "ResourceId"
+        },
+        "ChangeSetName": {
+          "shape": "ChangeSetName"
+        },
+        "EndTime": {
+          "shape": "DateTimeISO8601"
+        },
+        "FailureCode": {
+          "shape": "FailureCode"
+        },
+        "FailureDescription": {
+          "shape": "ExceptionMessageContent"
+        },
+        "StartTime": {
+          "shape": "DateTimeISO8601"
+        },
+        "Status": {
+          "shape": "ChangeStatus"
+        }
+      },
+      "type": "structure"
+    },
+    "DescribeEntityRequest": {
+      "members": {
+        "Catalog": {
+          "location": "querystring",
+          "locationName": "catalog",
+          "shape": "Catalog"
+        },
+        "EntityId": {
+          "location": "querystring",
+          "locationName": "entityId",
+          "shape": "ResourceId"
+        }
+      },
+      "required": [
+        "Catalog",
+        "EntityId"
+      ],
+      "type": "structure"
+    },
+    "DescribeEntityResponse": {
+      "members": {
+        "Details": {
+          "shape": "Json"
+        },
+        "EntityArn": {
+          "shape": "ARN"
+        },
+        "EntityIdentifier": {
+          "shape": "Identifier"
+        },
+        "EntityType": {
+          "shape": "EntityType"
+        },
+        "LastModifiedDate": {
+          "shape": "DateTimeISO8601"
+        }
+      },
+      "type": "structure"
+    },
+    "Entity": {
+      "members": {
+        "Identifier": {
+          "shape": "Identifier"
+        },
+        "Type": {
+          "shape": "EntityType"
+        }
+      },
+      "required": [
+        "Type"
+      ],
+      "type": "structure"
+    },
+    "EntityNameString": {
+      "max": 255,
+      "min": 1,
+      "pattern": "^\\\\S+[\\\\S\\\\s]*",
+      "type": "string"
+    },
+    "EntitySummary": {
+      "members": {
+        "EntityArn": {
+          "shape": "ARN"
+        },
+        "EntityId": {
+          "shape": "ResourceId"
+        },
+        "EntityType": {
+          "shape": "EntityType"
+        },
+        "LastModifiedDate": {
+          "shape": "DateTimeISO8601"
+        },
+        "Name": {
+          "shape": "EntityNameString"
+        },
+        "Visibility": {
+          "shape": "VisibilityValue"
+        }
+      },
+      "type": "structure"
+    },
+    "EntitySummaryList": {
+      "member": {
+        "shape": "EntitySummary"
+      },
+      "type": "list"
+    },
+    "EntityType": {
+      "max": 255,
+      "min": 1,
+      "pattern": "^[a-zA-Z]+$",
+      "type": "string"
+    },
+    "ErrorCodeString": {
+      "max": 72,
+      "min": 1,
+      "pattern": "^[a-zA-Z_]+$",
+      "type": "string"
+    },
+    "ErrorDetail": {
+      "members": {
+        "ErrorCode": {
+          "shape": "ErrorCodeString"
+        },
+        "ErrorMessage": {
+          "shape": "ExceptionMessageContent"
+        }
+      },
+      "type": "structure"
+    },
+    "ErrorDetailList": {
+      "member": {
+        "shape": "ErrorDetail"
+      },
+      "type": "list"
+    },
+    "ExceptionMessageContent": {
+      "max": 2048,
+      "min": 1,
+      "pattern": "^(.)+$",
+      "type": "string"
+    },
+    "FailureCode": {
+      "enum": [
+        "CLIENT_ERROR",
+        "SERVER_FAULT"
+      ],
+      "type": "string"
+    },
+    "Filter": {
+      "members": {
+        "Name": {
+          "shape": "FilterName"
+        },
+        "ValueList": {
+          "shape": "ValueList"
+        }
+      },
+      "type": "structure"
+    },
+    "FilterList": {
+      "max": 8,
+      "member": {
+        "shape": "Filter"
+      },
+      "min": 1,
+      "type": "list"
+    },
+    "FilterName": {
+      "max": 255,
+      "min": 1,
+      "pattern": "^[a-zA-Z]+$",
+      "type": "string"
+    },
+    "FilterValueContent": {
+      "max": 255,
+      "min": 1,
+      "pattern": "^(.)+$",
+      "type": "string"
+    },
+    "GetResourcePolicyRequest": {
+      "members": {
+        "ResourceArn": {
+          "location": "querystring",
+          "locationName": "resourceArn",
+          "shape": "ResourceARN"
+        }
+      },
+      "required": [
+        "ResourceArn"
+      ],
+      "type": "structure"
+    },
+    "GetResourcePolicyResponse": {
+      "members": {
+        "Policy": {
+          "shape": "ResourcePolicyJson"
+        }
+      },
+      "type": "structure"
+    },
+    "Identifier": {
+      "max": 255,
+      "min": 1,
+      "pattern": "^[\\w\\-@]+$",
+      "type": "string"
+    },
+    "InternalServiceException": {
+      "error": {
+        "httpStatusCode": 500
+      },
+      "exception": true,
+      "members": {
+        "Message": {
+          "shape": "ExceptionMessageContent"
+        }
+      },
+      "synthetic": true,
+      "type": "structure"
+    },
+    "Json": {
+      "max": 16384,
+      "min": 2,
+      "pattern": "^[\\s]*\\{[\\s\\S]*\\}[\\s]*$",
+      "type": "string"
+    },
+    "ListChangeSetsMaxResultInteger": {
+      "box": true,
+      "max": 20,
+      "min": 1,
+      "type": "integer"
+    },
+    "ListChangeSetsRequest": {
+      "members": {
+        "Catalog": {
+          "shape": "Catalog"
+        },
+        "FilterList": {
+          "shape": "FilterList"
+        },
+        "MaxResults": {
+          "shape": "ListChangeSetsMaxResultInteger"
+        },
+        "NextToken": {
+          "shape": "NextToken"
+        },
+        "Sort": {
+          "shape": "Sort"
+        }
+      },
+      "required": [
+        "Catalog"
+      ],
+      "type": "structure"
+    },
+    "ListChangeSetsResponse": {
+      "members": {
+        "ChangeSetSummaryList": {
+          "shape": "ChangeSetSummaryList"
+        },
+        "NextToken": {
+          "shape": "NextToken"
+        }
+      },
+      "type": "structure"
+    },
+    "ListEntitiesMaxResultInteger": {
+      "box": true,
+      "max": 50,
+      "min": 1,
+      "type": "integer"
+    },
+    "ListEntitiesRequest": {
+      "members": {
+        "Catalog": {
+          "shape": "Catalog"
+        },
+        "EntityType": {
+          "shape": "EntityType"
+        },
+        "FilterList": {
+          "shape": "FilterList"
+        },
+        "MaxResults": {
+          "shape": "ListEntitiesMaxResultInteger"
+        },
+        "NextToken": {
+          "shape": "NextToken"
+        },
+        "OwnershipType": {
+          "shape": "OwnershipType"
+        },
+        "Sort": {
+          "shape": "Sort"
+        }
+      },
+      "required": [
+        "Catalog",
+        "EntityType"
+      ],
+      "type": "structure"
+    },
+    "ListEntitiesResponse": {
+      "members": {
+        "EntitySummaryList": {
+          "shape": "EntitySummaryList"
+        },
+        "NextToken": {
+          "shape": "NextToken"
+        }
+      },
+      "type": "structure"
+    },
+    "ListTagsForResourceRequest": {
+      "members": {
+        "ResourceArn": {
+          "shape": "ResourceARN"
+        }
+      },
+      "required": [
+        "ResourceArn"
+      ],
+      "type": "structure"
+    },
+    "ListTagsForResourceResponse": {
+      "members": {
+        "ResourceArn": {
+          "shape": "ResourceARN"
+        },
+        "Tags": {
+          "shape": "TagList"
+        }
+      },
+      "type": "structure"
+    },
+    "NextToken": {
+      "max": 2048,
+      "min": 1,
+      "pattern": "^[\\w+=.:@\\-\\/]$",
+      "type": "string"
+    },
+    "OwnershipType": {
+      "enum": [
+        "SELF",
+        "SHARED"
+      ],
+      "type": "string"
+    },
+    "PutResourcePolicyRequest": {
+      "members": {
+        "Policy": {
+          "shape": "ResourcePolicyJson"
+        },
+        "ResourceArn": {
+          "shape": "ResourceARN"
+        }
+      },
+      "required": [
+        "ResourceArn",
+        "Policy"
+      ],
+      "type": "structure"
+    },
+    "PutResourcePolicyResponse": {
+      "members": {},
+      "type": "structure"
+    },
+    "RequestedChangeList": {
+      "max": 20,
+      "member": {
+        "shape": "Change"
+      },
+      "min": 1,
+      "type": "list"
+    },
+    "ResourceARN": {
+      "max": 255,
+      "min": 1,
+      "pattern": "^arn:[\\w+=/,.@-]+:aws-marketplace:[\\w+=/,.@-]*:[0-9]+:[\\w+=,.@-]+(/[\\w+=,.@-]+)*$",
+      "type": "string"
+    },
+    "ResourceId": {
+      "max": 255,
+      "min": 1,
+      "pattern": "^[\\w\\-]+$",
+      "type": "string"
+    },
+    "ResourceIdList": {
+      "member": {
+        "shape": "ResourceId"
+      },
+      "type": "list"
+    },
+    "ResourceInUseException": {
+      "error": {
+        "httpStatusCode": 423
+      },
+      "exception": true,
+      "members": {
+        "Message": {
+          "shape": "ExceptionMessageContent"
+        }
+      },
+      "synthetic": true,
+      "type": "structure"
+    },
+    "ResourceNotFoundException": {
+      "error": {
+        "httpStatusCode": 404
+      },
+      "exception": true,
+      "members": {
+        "Message": {
+          "shape": "ExceptionMessageContent"
+        }
+      },
+      "synthetic": true,
+      "type": "structure"
+    },
+    "ResourceNotSupportedException": {
+      "error": {
+        "httpStatusCode": 415
+      },
+      "exception": true,
+      "members": {
+        "Message": {
+          "shape": "ExceptionMessageContent"
+        }
+      },
+      "synthetic": true,
+      "type": "structure"
+    },
+    "ResourcePolicyJson": {
+      "max": 10240,
+      "min": 1,
+      "pattern": "^[\\u0009\\u000A\\u000D\\u0020-\\u00FF]+$",
+      "type": "string"
+    },
+    "ServiceQuotaExceededException": {
+      "error": {
+        "httpStatusCode": 402
+      },
+      "exception": true,
+      "members": {
+        "Message": {
+          "shape": "ExceptionMessageContent"
+        }
+      },
+      "synthetic": true,
+      "type": "structure"
+    },
+    "Sort": {
+      "members": {
+        "SortBy": {
+          "shape": "SortBy"
+        },
+        "SortOrder": {
+          "shape": "SortOrder"
+        }
+      },
+      "type": "structure"
+    },
+    "SortBy": {
+      "max": 255,
+      "min": 1,
+      "pattern": "^[a-zA-Z]+$",
+      "type": "string"
+    },
+    "SortOrder": {
+      "enum": [
+        "ASCENDING",
+        "DESCENDING"
+      ],
+      "type": "string"
+    },
+    "StartChangeSetRequest": {
+      "members": {
+        "Catalog": {
+          "shape": "Catalog"
+        },
+        "ChangeSet": {
+          "shape": "RequestedChangeList"
+        },
+        "ChangeSetName": {
+          "shape": "ChangeSetName"
+        },
+        "ChangeSetTags": {
+          "shape": "TagList"
+        },
+        "ClientRequestToken": {
+          "idempotencyToken": true,
+          "shape": "ClientRequestToken"
+        }
+      },
+      "required": [
+        "Catalog",
+        "ChangeSet"
+      ],
+      "type": "structure"
+    },
+    "StartChangeSetResponse": {
+      "members": {
+        "ChangeSetArn": {
+          "shape": "ARN"
+        },
+        "ChangeSetId": {
+          "shape": "ResourceId"
+        }
+      },
+      "type": "structure"
+    },
+    "Tag": {
+      "members": {
+        "Key": {
+          "shape": "TagKey"
+        },
+        "Value": {
+          "shape": "TagValue"
+        }
+      },
+      "required": [
+        "Key",
+        "Value"
+      ],
+      "type": "structure"
+    },
+    "TagKey": {
+      "max": 128,
+      "min": 1,
+      "pattern": "^([\\p{L}\\p{Z}\\p{N}_.:/=+\\-@]*)$",
+      "type": "string"
+    },
+    "TagKeyList": {
+      "max": 200,
+      "member": {
+        "shape": "TagKey"
+      },
+      "min": 1,
+      "type": "list"
+    },
+    "TagList": {
+      "max": 200,
+      "member": {
+        "shape": "Tag"
+      },
+      "min": 1,
+      "type": "list"
+    },
+    "TagResourceRequest": {
+      "members": {
+        "ResourceArn": {
+          "shape": "ResourceARN"
+        },
+        "Tags": {
+          "shape": "TagList"
+        }
+      },
+      "required": [
+        "ResourceArn",
+        "Tags"
+      ],
+      "type": "structure"
+    },
+    "TagResourceResponse": {
+      "members": {},
+      "type": "structure"
+    },
+    "TagValue": {
+      "max": 256,
+      "min": 0,
+      "pattern": "^([\\p{L}\\p{Z}\\p{N}_.:/=+\\-@]*)$",
+      "type": "string"
+    },
+    "ThrottlingException": {
+      "error": {
+        "httpStatusCode": 429
+      },
+      "exception": true,
+      "members": {
+        "Message": {
+          "shape": "ExceptionMessageContent"
+        }
+      },
+      "synthetic": true,
+      "type": "structure"
+    },
+    "UntagResourceRequest": {
+      "members": {
+        "ResourceArn": {
+          "shape": "ResourceARN"
+        },
+        "TagKeys": {
+          "shape": "TagKeyList"
+        }
+      },
+      "required": [
+        "ResourceArn",
+        "TagKeys"
+      ],
+      "type": "structure"
+    },
+    "UntagResourceResponse": {
+      "members": {},
+      "type": "structure"
+    },
+    "ValidationException": {
+      "error": {
+        "httpStatusCode": 422
+      },
+      "exception": true,
+      "members": {
+        "Message": {
+          "shape": "ExceptionMessageContent"
+        }
+      },
+      "synthetic": true,
+      "type": "structure"
+    },
+    "ValueList": {
+      "max": 10,
+      "member": {
+        "shape": "FilterValueContent"
+      },
+      "min": 1,
+      "type": "list"
+    },
+    "VisibilityValue": {
+      "max": 64,
+      "min": 1,
+      "pattern": "^[a-zA-Z]+$",
+      "type": "string"
+    }
+  },
+  "version": "2.0"
+}
