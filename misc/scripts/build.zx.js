@@ -1,5 +1,5 @@
 
-async function patchWasmExec() {
+async function patchWasmExec(outDir) {
   const goroot = await $`go env GOROOT`;
   const wasmExec = path.join(goroot.stdout.replace("\n", ""), "misc", "wasm", "wasm_exec.js");
   if (!wasmExec.endsWith("wasm_exec.js")) {
@@ -8,7 +8,7 @@ async function patchWasmExec() {
     );
   }
 
-  async function copyWasmExec(wasmExec) {
+  async function copyWasmExec(wasmExec, outDir) {
     // const globalName = "awsSdkGoMock";
     const providerName = "AwsSdkGoMock";
     let contents = await fs.promises.readFile(wasmExec, "utf-8");
@@ -35,27 +35,39 @@ globalThis.${providerName} = ${providerName};`;
 // ${providerName}.client = {};
 // ${providerName}.ec2 = {};
 // `;
-    await fs.promises.writeFile(path.resolve(__dirname, "..", "..", "dist", "wasm_exec.js"), contents);
+    await fs.promises.writeFile(path.resolve(__dirname, "..", "..", outDir, "wasm_exec.js"), contents);
   }
 
-  copyWasmExec(wasmExec).then(console.log("done"));
+  copyWasmExec(wasmExec, outDir).then(console.log("done"));
 }
 
-async function copyFiles() {
+async function copyFiles(outDir) {
   const files = [path.join("misc", "index.html"), path.join("misc", "index.js")]
   for(const src of files) {
-    await fs.copyFile(src, path.join("dist", path.basename(src)))
+    await fs.copyFile(src, path.join(outDir, path.basename(src)))
   }
 }
 
+async function buildWeb(dir) {
+  const outDir = path.join(dir, "web")
+  await $`mkdir -p ${outDir}`
+  await $`GOOS=js GOARCH=wasm go build -o ${outDir}/main.wasm -v`
+  await patchWasmExec(outDir)
+  await copyFiles(outDir)
+}
+
+async function buildV1(dir) {
+  const outDir = path.join(dir, "sdkv1")
+  await $`mkdir -p ${outDir}`
+  await $`rm -rf ${outDir}/*`
+  await $`cp -rL aws/aws-sdk-go/* ${outDir}`
+}
 
 async function build() {
   // compile
-  await $`mkdir -p dist`
-  await $`GOOS=js GOARCH=wasm go build -o main.wasm -v`
-  await $`mv main.wasm dist`
-  await patchWasmExec()
-  await copyFiles()
+  const outBaseDir = "dist";
+  await buildWeb(outBaseDir);
+  await buildV1(outBaseDir);
 }
 
 build()

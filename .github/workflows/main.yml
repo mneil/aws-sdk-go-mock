@@ -1,0 +1,32 @@
+name: Build, Test, Publish
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: install
+        run: npm ci
+      - name: build
+        run: npm run build
+      # - name: test
+      #   run: npm test
+
+      - name: Publish v1
+        if: github.ref == 'refs/heads/main'
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: sdkv1
+          FOLDER: dist/sdkv1
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
