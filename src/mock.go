@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/go-faker/faker/v4"
+	"github.com/go-faker/faker/v4/pkg/options"
 	"github.com/jinzhu/copier"
 )
 
@@ -16,6 +17,16 @@ type call struct {
 	Response interface{}
 	Run func(*Request)
 	onlyOnce bool
+	fakeOptions []options.OptionFunc
+}
+
+func (c *call) WithFakeOptions(o ...options.OptionFunc) *call {
+	c.fakeOptions = o
+	return c
+}
+
+func (c *call) FakeOptions() []options.OptionFunc {
+	return c.fakeOptions
 }
 
 // When matches calls only when specific arguments are passed to the service and method
@@ -46,8 +57,17 @@ func (c *call) IsOnce() bool {
 	return c.onlyOnce
 }
 
+type RecordedCall struct{
+	Service string
+	Operation string
+	Params interface{}
+	Response interface{}
+}
+
 type mock struct {
 	ExpectedCalls map[string]map[string][]*call
+	calls []RecordedCall
+	fakeOptions []options.OptionFunc
 }
 
 var instance *mock
@@ -58,6 +78,8 @@ func GetMock() *mock {
 	once.Do(func() {
 			instance = &mock{
 				ExpectedCalls: make(map[string]map[string][]*call),
+				calls: make([]RecordedCall, 0),
+				fakeOptions: make([]options.OptionFunc, 0),
 			}
 	})
 	return instance
@@ -71,9 +93,14 @@ func getType(t interface{}) reflect.Type {
 	return v.Type()
 }
 
+func (m *mock) FakeOptions(o ...options.OptionFunc) {
+	m.fakeOptions = o
+}
+
 func (m *mock) SendHook (r *Request) {
 	fmt.Printf("service: %s, operation: %s\n", r.ClientInfo.ServiceName, r.Operation.Name)
 	// TODO: Record every operation
+	// find all calls that the user has mocked
   calls := []*call{}
 	if _, ok := m.ExpectedCalls["*"]; ok {
 		// pattern match *.*
@@ -81,7 +108,9 @@ func (m *mock) SendHook (r *Request) {
 			calls = append(calls, c...)
 		}
 	}
+	// service scoped mocks
 	if _, ok := m.ExpectedCalls[r.ClientInfo.ServiceName]; ok {
+		// pattern match Service.Opereration
 		if c, ok := m.ExpectedCalls[r.ClientInfo.ServiceName][r.Operation.Name]; ok {
 			calls = append(calls, c...)
 		}
@@ -90,11 +119,16 @@ func (m *mock) SendHook (r *Request) {
 			calls = append(calls, c...)
 		}
 	}
-
+	// fill the output (r.Data) with fake data based on the shape of r.Data
 	if err := m.Fake(r.Data); err != nil {
 		fmt.Println("Error creating fake data", err)
 	}
+	// overwrite anything in r.Data with the information returned by user mocks
+	// higher fidelity mocks take precedent (ie: *.* is overwritten by Service.* data)
 	for _, call := range calls {
+		if len(call.fakeOptions) > 0 {
+			m.Fake(r.Data, call.fakeOptions...)
+		}
 		if call.Response != nil {
 			m.Copy(call.Response, r.Data)
 			// if call.IsOnce() {
@@ -105,39 +139,56 @@ func (m *mock) SendHook (r *Request) {
 			call.Run(r)
 		}
 	}
+	m.called(r)
 }
+
+// Record a call to the mock
+func (m *mock) called(r *Request) {
+	m.calls = append(m.calls, RecordedCall{
+		Service: r.ClientInfo.ServiceName,
+		Operation: r.Operation.Name,
+		Params: r.Params,
+		Response: r.Data,
+	})
+}
+// Calls returns calls recorded by the SDK
+func (m *mock) Calls() []RecordedCall {
+	return m.calls
+}
+// ResetCalls wipes all recorded calls resetting it back to an empty slice
+func (m *mock) ResetCalls() {
+	m.calls = make([]RecordedCall, 0)
+}
+// Reset resets the whole mock. calls and ExpectedCalls are removed
+func (m *mock) Reset() {
+	m.ResetCalls()
+	m.ExpectedCalls = make(map[string]map[string][]*call)
+}
+
 // Copy deep copies from one interface to the other. Ignores nil fields and fields that do not exist in target (to). Target must be a pointer
 func (m *mock) Copy(from interface{}, to interface{}) {
 	copier.CopyWithOption(to, from, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 }
 
 // Fake generates fake data from on an empty struct. example: Fake(&s3.PutObjectOutput{})
-func (m *mock) Fake(in interface{}) error {
+func (m *mock) Fake(in interface{}, callOptions ...options.OptionFunc) error {
 	outputType := getType(in)
 	outputPointer := reflect.New(outputType)   // this type of this variable is reflect.Value.
 	outputValue := outputPointer.Elem()        // this type of this variable is reflect.Value.
 	outputInterface := outputValue.Interface() // this type of this variable is interface{}
 	outPtr := &outputInterface
 	// fmt.Printf("Output type is %+v\n", outPtr)
-	if err := faker.FakeData(outPtr); err != nil {
+	opts := make([]options.OptionFunc, 0)
+	opts = append(opts, m.fakeOptions...)
+	opts = append(opts, callOptions...)
+	if err := faker.FakeData(outPtr, opts...); err != nil {
 		return err
 	}
 	m.Copy(*outPtr, in)
 	return nil
-	// return *outPtr, nil
-
-	// if err := faker.FakeData(outPtr); err == nil {
-	// 	m.Copy(*outPtr, t)
-	// } else {
-	// 	fmt.Println("Error creating fake data", err)
-	// }
 }
 
 func (m *mock) On(serviceName string, methodName string) *call {
-
-	// m.mutex.Lock()
-	// defer m.mutex.Unlock()
-	// c := newCall(m, methodName, assert.CallerInfo(), arguments...)
 	c := newCall(serviceName, methodName)
 	if _, ok := m.ExpectedCalls[serviceName]; !ok {
 		m.ExpectedCalls[serviceName] = make(map[string][]*call)
@@ -153,6 +204,7 @@ func newCall(serviceName string, methodName string) *call {
 	return &call {
 		Service: serviceName,
 		Method: methodName,
+		fakeOptions: make([]options.OptionFunc, 0),
 	}
 }
 
