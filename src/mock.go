@@ -1,6 +1,7 @@
 package request
 
 import (
+	_ "embed"
 	"fmt"
 	"reflect"
 	"sync"
@@ -9,6 +10,9 @@ import (
 	"github.com/go-faker/faker/v4/pkg/options"
 	"github.com/jinzhu/copier"
 )
+
+//go:embed mock_service.json
+var MockServiceJson []byte
 
 type call struct {
 	Service string
@@ -170,11 +174,15 @@ func (m *mock) Copy(from interface{}, to interface{}) {
 	copier.CopyWithOption(to, from, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 }
 
+func GetInterfaceValue(in interface{}) reflect.Value {
+	outputType := getType(in) // get the type of interface regardless if interface is value or pointer
+	outputPointer := reflect.New(outputType)   // this type of this variable is reflect.Value.
+	return outputPointer.Elem() // gets the value that the output pointer points to
+}
+
 // Fake generates fake data from on an empty struct. example: Fake(&s3.PutObjectOutput{})
 func (m *mock) Fake(in interface{}, callOptions ...options.OptionFunc) error {
-	outputType := getType(in)
-	outputPointer := reflect.New(outputType)   // this type of this variable is reflect.Value.
-	outputValue := outputPointer.Elem()        // this type of this variable is reflect.Value.
+	outputValue := GetInterfaceValue(in)        // this type of this variable is reflect.Value.
 	outputInterface := outputValue.Interface() // this type of this variable is interface{}
 	outPtr := &outputInterface
 	// fmt.Printf("Output type is %+v\n", outPtr)

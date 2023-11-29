@@ -1,0 +1,29 @@
+{
+
+	"ec2": {
+		"RunInstancesInput": {
+			"Out": [
+				{
+					"Key": "*",
+					"Property": "Instances"
+				}
+			],
+			"Stores": [
+				{
+					"Store": "Reservations",
+					"Key": "Instances[].InstanceId",
+					"Property": "Reservations"
+
+				}
+			]
+		},
+		"DescribeInstancesInput": {
+			"Uses": [
+				{
+					"Key": "Reservations",
+					"From": "InstanceIds"
+				}
+			]
+		}
+	}
+}

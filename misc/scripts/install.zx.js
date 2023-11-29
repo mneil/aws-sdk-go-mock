@@ -116,6 +116,7 @@ async function install() {
   await $`go mod tidy`
   await $`ln -fs $PWD/src/mock.go $PWD/aws/aws-sdk-go/aws/request/mock.go`
   await $`ln -fs $PWD/src/mock_test.go $PWD/aws/aws-sdk-go/aws/request/mock_test.go`
+  await $`ln -f $PWD/src/mock_service.json $PWD/aws/aws-sdk-go/aws/request/mock_service.json`
   // await $`find ./aws/aws-sdk-go -type f -exec sed -i "s|github.com/aws/aws-sdk-go|github.com/mneil/aws-sdk-go-mock|g" {} \\;`
 }
 
