@@ -22,6 +22,8 @@ type Out struct {
 }
 // Store the output into a data "store"
 type Store struct {
+	// Service the store belongs to
+	Service string `json:"service"`
 	// the name of the store to put the data into
 	Store string `json:"store"`
 	// the property of the output struct to use as the key in the store (like a primary key). Example: "Instances[].InstanceId"
@@ -31,6 +33,8 @@ type Store struct {
 }
 // Use some data from the store in the output value
 type Use struct {
+	// Service the store belongs to
+	Service string `json:"service"`
 	// Store to retrieve data from
 	Store string `json:"key"`
 	// From which property to look for the Key of the store
@@ -44,6 +48,31 @@ type MockData struct {
 }
 type MockOperationConfig map[string]MockData
 type MockServiceConfig map[string]MockOperationConfig
+
+
+// <image-id>
+type MockStore map[string]interface{}
+// RunInstances
+type MockStoreService map[string]MockStore
+
+var MockStorage = make(map[string]MockStoreService)
+// ec2
+// type MockStorage struct {
+
+// 	store map[string]MockStoreService
+// }
+
+// func (ms *MockStorage) Service(s string) {
+
+// }
+
+// func NewMockStorage() *MockStorage {
+
+// 	mss := make(map[string]MockStoreService)
+// 	return &MockStorage{
+// 		store: mss,
+// 	}
+// }
 
 // {
 // 	// Service
@@ -121,11 +150,29 @@ func TestEc2RunInstances(t *testing.T) {
 						fmt.Println("Unable to map out to value of type", f.Kind())
 					}
 				}
-				// for _, store := range op.Stores {
-				// 	fmt.Println("op.Stores", store.Key)
-				// 	// fmt.Println("op.Stores", store.Property)
-				// 	// fmt.Println("op.Stores", store.Store)
-				// }
+				for _, store := range op.Stores {
+					fmt.Println("op.Stores", store.Key)
+					service := store.Service
+					if service == "" {
+						service = r.ClientInfo.ServiceName
+					}
+					mockService, ok := MockStorage[service]
+					if !ok {
+						MockStorage[service] = make(map[string]MockStore)
+						mockService = MockStorage[service]
+					}
+					mockStore, ok := mockService[store.Store]
+					if !ok {
+						mockService[store.Store] = make(map[string]interface{})
+						mockStore = mockService[store.Store]
+					}
+
+					mockStore[store.Property] = r.Data
+
+					// fmt.Println("op.Stores", store.Service)
+					// fmt.Println("op.Stores", store.Property)
+					// fmt.Println("op.Stores", store.Store)
+				}
 				// for _, uses := range op.Uses {
 				// 	fmt.Println("op.Uses", uses.From)
 				// 	// fmt.Println("op.Uses", uses.Store)
