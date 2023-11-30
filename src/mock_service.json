@@ -1,7 +1,7 @@
 {
 
 	"ec2": {
-		"RunInstancesInput": {
+		"RunInstances": {
 			"Out": [
 				{
 					"Key": "*",
@@ -17,7 +17,7 @@
 				}
 			]
 		},
-		"DescribeInstancesInput": {
+		"DescribeInstances": {
 			"Uses": [
 				{
 					"Key": "Reservations",

@@ -4,8 +4,10 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"testing"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
@@ -82,9 +84,8 @@ type MockServiceConfig map[string]MockOperationConfig
 
 
 func TestEc2RunInstances(t *testing.T) {
-	mockServiceConfig := &MockServiceConfig{}
-	json.Unmarshal(request.MockServiceJson, mockServiceConfig)
-	fmt.Println("mockServiceConfig", mockServiceConfig)
+	Config := &MockServiceConfig{}
+	json.Unmarshal(request.MockServiceJson, Config)
 	sess := session.Must(session.NewSession())
 
 	// Create a new instance of the service's client with a Session.
@@ -94,18 +95,56 @@ func TestEc2RunInstances(t *testing.T) {
 	svc := ec2.New(sess)
 
 	mock := request.GetMock()
-	// mock.On("ec2", "RunInstances").Return(&struct{}{})
 	mock.On("*", "*").Do(func (r *request.Request) {
+		// Look in config to see if service has mappings
+		if svc, ok := (*Config)[r.ClientInfo.ServiceName]; ok {
+			// Look at service mappings to see if this operation has any mappings
+			if op, ok := svc[r.Operation.Name]; ok {
+				// Copy data from op.Out into r.Data as defined in the mapping
+				for _, out := range op.Out {
+					p := reflect.ValueOf(r.Data)
+					f := p.Elem().FieldByName(out.Property)
+					src := r.Params
+					// if out.Key != "" && out.Key != "*" {
+					// 	// TODO: If this is true we need to get a specific value out of Params
+					// }
+					// value we map to is a slice. We map to all entries in the slice
+					if f.Kind() == reflect.Slice {
+						for i := 0; i < f.Len(); i++ {
+							e := f.Index(i)
+							mock.Copy(src, e.Interface())
+						}
+					// value is a struct
+					} else if f.Kind() == reflect.Struct {
+						mock.Copy(src, f.Interface())
+					} else {
+						fmt.Println("Unable to map out to value of type", f.Kind())
+					}
+				}
+				// for _, store := range op.Stores {
+				// 	fmt.Println("op.Stores", store.Key)
+				// 	// fmt.Println("op.Stores", store.Property)
+				// 	// fmt.Println("op.Stores", store.Store)
+				// }
+				// for _, uses := range op.Uses {
+				// 	fmt.Println("op.Uses", uses.From)
+				// 	// fmt.Println("op.Uses", uses.Store)
+				// }
+
+
+			}
+		}
+
 		// out, err := json.Marshal(r.Data.(*aws_ec2.Reservation))
 		// if err != nil {
 		// 	fmt.Println("Error marshalling: ", err)
 		// }
-		in := request.GetInterfaceValue(r.Params)
-		out := request.GetInterfaceValue(r.Data)
+		// in := request.GetInterfaceValue(r.Params)
+		// out := request.GetInterfaceValue(r.Data)
 
-		fmt.Println("Call: ", r.ClientInfo.ServiceName, r.Operation.Name)
-		fmt.Println("PARAMS", in.Type().Name(), r.Params)
-		fmt.Println("RESPONSE", out.Type().Name(), r.Data)
+		// fmt.Println("Call: ", r.ClientInfo.ServiceName, r.Operation.Name)
+		// fmt.Println("PARAMS", in.Type().Name(), r.Params)
+		// fmt.Println("RESPONSE", out.Type().Name(), r.Data)
 		// fmt.Println("RESPONSE", string(out[:]))
 		fmt.Println("")
 		// call my jsfun with args
@@ -113,8 +152,12 @@ func TestEc2RunInstances(t *testing.T) {
 
 
 
+	// svc.RunInstancesWithContext(context.Background(), &ec2.RunInstancesInput{ImageId: aws.String("abc-123")})
 
-	reservation, err := svc.RunInstances(&ec2.RunInstancesInput{})
+	reservation, err := svc.RunInstances(&ec2.RunInstancesInput{ImageId: aws.String("abc-123")})
+
+	fmt.Println("Image ID", *reservation.Instances[0].ImageId)
+
 	if err != nil {
 		t.Fatalf(`TestEc2RunInstances: RunInstances error %v, want nil`, err)
 	}

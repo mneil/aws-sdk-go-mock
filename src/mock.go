@@ -123,25 +123,34 @@ func (m *mock) SendHook (r *Request) {
 			calls = append(calls, c...)
 		}
 	}
+	// get all options set on individual matching calls
+	// options set later take precedence
+	overrideOptions := make([]options.OptionFunc, 0)
+	for _, call := range calls {
+		if len(call.fakeOptions) > 0 {
+			overrideOptions = append(overrideOptions, call.fakeOptions...)
+		}
+	}
+
 	// fill the output (r.Data) with fake data based on the shape of r.Data
-	if err := m.Fake(r.Data); err != nil {
+	if err := m.Fake(r.Data, overrideOptions...); err != nil {
 		fmt.Println("Error creating fake data", err)
 	}
 	// overwrite anything in r.Data with the information returned by user mocks
 	// higher fidelity mocks take precedent (ie: *.* is overwritten by Service.* data)
 	for _, call := range calls {
-		if len(call.fakeOptions) > 0 {
-			m.Fake(r.Data, call.fakeOptions...)
-		}
+		// if len(call.fakeOptions) > 0 {
+		// 	m.Fake(r.Data, call.fakeOptions...)
+		// }
 		if call.Response != nil {
 			m.Copy(call.Response, r.Data)
-			// if call.IsOnce() {
-			// 	// TODO: Remove from the expected call list on the mock forever
-			// }
 		}
 		if call.Run !=  nil {
 			call.Run(r)
 		}
+		// if call.IsOnce() {
+		// 	// TODO: Remove from the expected call list on the mock forever
+		// }
 	}
 	m.called(r)
 }
