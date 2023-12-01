@@ -5,6 +5,7 @@ go 1.20
 replace github.com/aws/aws-sdk-go => ./aws/aws-sdk-go
 
 require (
+	github.com/alecthomas/participle/v2 v2.1.1
 	github.com/aws/aws-sdk-go v1.45.25
 	github.com/go-faker/faker/v4 v4.2.0
 	github.com/jinzhu/copier v0.4.0

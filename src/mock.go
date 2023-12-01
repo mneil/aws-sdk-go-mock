@@ -180,7 +180,8 @@ func (m *mock) Reset() {
 
 // Copy deep copies from one interface to the other. Ignores nil fields and fields that do not exist in target (to). Target must be a pointer
 func (m *mock) Copy(from interface{}, to interface{}) {
-	copier.CopyWithOption(to, from, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+	err := copier.CopyWithOption(to, from, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+	fmt.Println("Error copying", err)
 }
 
 func GetInterfaceValue(in interface{}) reflect.Value {

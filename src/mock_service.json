@@ -2,26 +2,24 @@
 
 	"ec2": {
 		"RunInstances": {
-			"Out": [
+			"out": [
 				{
-					"Key": "*",
-					"Property": "Instances"
+					"property": "Instances"
 				}
 			],
-			"Stores": [
+			"stores": [
 				{
-					"Store": "Reservations",
-					"Key": "Instances[].InstanceId",
-					"Property": "Reservations"
-
+					"store": "Reservations",
+					"key": "Instances[].InstanceId"
 				}
 			]
 		},
 		"DescribeInstances": {
-			"Uses": [
+			"uses": [
 				{
-					"Key": "Reservations",
-					"From": "InstanceIds"
+					"store": "Reservations",
+					"key": "InstanceIds[]",
+					"out": "Reservations"
 				}
 			]
 		}
