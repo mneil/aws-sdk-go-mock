@@ -248,6 +248,52 @@ func ValueToInterface(value reflect.Value) interface{} {
 // func (c *EC2) DescribeInstancesRequest(input *DescribeInstancesInput) (req *request.Request, output *DescribeInstancesOutput) {
 // type DescribeInstancesOutput struct
 
+func TestCopySlicPtr(t *testing.T) {
+	mock := request.GetMock()
+	dst := &[]*string{aws.String("1"), aws.String("2")}
+	src := &[]*string{aws.String("3"), aws.String("4")}
+
+	dstV := reflect.ValueOf(dst)
+	srcV := reflect.ValueOf(src)
+
+	// to, from
+	err := mock.Copy(srcV.Interface(), dstV.Interface())
+	fmt.Println("dstV", dstV)
+
+	fmt.Println("dst", dst)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if *(*dst)[0] != "3" {
+		t.Errorf("dst has wrong values %+v", dst)
+	}
+}
+func TestCopySlicPtr2(t *testing.T) {
+	mock := request.GetMock()
+	dst := &struct{Value *[]*string}{Value: &[]*string{aws.String("1"), aws.String("2")}}
+	src := &struct{Value *[]*string}{Value: &[]*string{aws.String("3"), aws.String("4")}}
+
+	dstV := reflect.ValueOf(dst)
+	// srcV := reflect.ValueOf(src)
+
+	// p := reflect.ValueOf(r.Data)
+	f := dstV.Elem().FieldByName("Value")
+	fmt.Println("F", f)
+
+	// to, from
+	err := mock.Copy(src.Value, f.Interface())
+	fmt.Println("dstV", dstV)
+
+	fmt.Println("dst", dst)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if *(*dst.Value)[0] != "3" {
+		e, _ :=json.Marshal(*dst.Value)
+		t.Errorf("dst has wrong values %s", e)
+	}
+}
 
 func TestEc2RunInstances(t *testing.T) {
 	Config := &MockServiceConfig{}
@@ -300,6 +346,7 @@ func TestEc2RunInstances(t *testing.T) {
 						fmt.Println(err)
 					}
 					values := GetValues(r.Params, valueQuery)
+					// push values into response data
 					for _, value := range values {
 						sValue, ok := ValueToInterface(value).(string)
 						if !ok {
@@ -334,33 +381,86 @@ func TestEc2RunInstances(t *testing.T) {
 
 								// panic(fmt.Sprintf("Trying to replace a slice with a non-slice.\n\tService %s\n\tOperation: %s\n", r.ClientInfo.ServiceName, r.Operation.Name))
 							}
-							srcX := reflect.New(reflect.TypeOf(src))
-							srcX.Elem().Set(reflect.ValueOf(src))
 
-							destX := reflect.New(reflect.TypeOf(f))
-							destX.Elem().Set(reflect.ValueOf(f))
+							err := mock.Copy(src, f.Addr().Interface())
+							// fmt.Println(f.Interface())
+							if err != nil {
+								fmt.Println("ERR right here", err)
+							} else {
+								fmt.Println("We're so good")
+							}
+							// dst := &[]string{"1", "2"}
+							// src := &[]string{"2", "3"}
 
-							logSrc := srcX.Interface()
-							logF := reflect.ValueOf(f).Pointer()
+							// dstV := reflect.ValueOf(dst)
+							// srcV := reflect.ValueOf(src)
 
-							// fmt.Println("src", logSrc)
-							fmt.Println("f", logF)
+							// // to, from
+							// err := copier.CopyWithOption(dstV.Interface(), srcV.Interface(), copier.Option{IgnoreEmpty: true, DeepCopy: true})
+							// fmt.Println("dstV", dstV)
 
-							fmt.Println("canAddr src", canAddr(logSrc))
-							fmt.Println("canAddr f", canAddr(logF))
-
-							// fmt.Println("srcX", srcX)
-							// fmt.Println("destX", f.Interface())
-
-							mock.Copy(logSrc, logF)
-							// sliceSrc := src.([]interface{})
-							// for i := 0; i < len(sliceSrc); i++ {
-							// 	// if i > f.Len() {
-							// 	// 	fAsInterface := f.Interface().([]interface{})
-							// 	// 	f = append(fAsInterface, interface{})
-							// 	// }
-							// 	mock.Copy(sliceSrc[i], f.Index(i).Interface())
+							// fmt.Println("dst", dst)
+							// if err != nil {
+							// 	fmt.Println(err)
 							// }
+							// t.Fatalf("rekt")
+							// ----------------------------------------
+
+
+
+							// srcS := src.([]interface{})
+							// srcV := make([]reflect.Value, len(srcS))
+							// for i, srcI := range srcS {
+							// 	srcV[i] = reflect.ValueOf(srcI)
+							// }
+
+							// // TODO: check if f is a pointer? f should always be a pointer because AWS types
+							// reflect.Append(f.Elem(), srcV...)
+							// // dstV = reflect.Append(dstV.Elem(), v...)
+
+							// // tmp := (dstV.Interface()).([]string)
+							// // dst = &tmp
+							// // // dstV = srcV
+
+							// // fmt.Println(dst)
+							// // if (*dst)[0] != "2" {
+							// // 	t.Fatalf("rekt")
+
+							// // }
+
+
+
+
+							// fmt.Println("SLIC INTERFACE", reflect.Indirect(f))
+
+
+							// srcX := reflect.New(reflect.TypeOf(src))
+							// srcX.Elem().Set(reflect.ValueOf(src))
+
+							// destX := reflect.New(reflect.TypeOf(f))
+							// destX.Elem().Set(reflect.ValueOf(f))
+
+							// logSrc := srcX.Interface()
+							// logF := reflect.ValueOf(f).Pointer()
+
+							// // fmt.Println("src", logSrc)
+							// fmt.Println("f", logF)
+
+							// fmt.Println("canAddr src", canAddr(logSrc))
+							// fmt.Println("canAddr f", canAddr(logF))
+
+							// // fmt.Println("srcX", srcX)
+							// // fmt.Println("destX", f.Interface())
+
+							// mock.Copy(logSrc, logF)
+							// // sliceSrc := src.([]interface{})
+							// // for i := 0; i < len(sliceSrc); i++ {
+							// // 	// if i > f.Len() {
+							// // 	// 	fAsInterface := f.Interface().([]interface{})
+							// // 	// 	f = append(fAsInterface, interface{})
+							// // 	// }
+							// // 	mock.Copy(sliceSrc[i], f.Index(i).Interface())
+							// // }
 						}
 
 						// data := r.Data.(*ec2.DescribeInstancesOutput)

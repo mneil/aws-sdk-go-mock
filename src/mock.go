@@ -179,9 +179,9 @@ func (m *mock) Reset() {
 }
 
 // Copy deep copies from one interface to the other. Ignores nil fields and fields that do not exist in target (to). Target must be a pointer
-func (m *mock) Copy(from interface{}, to interface{}) {
+func (m *mock) Copy(from interface{}, to interface{}) error {
 	err := copier.CopyWithOption(to, from, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-	fmt.Println("Error copying", err)
+	return err
 }
 
 func GetInterfaceValue(in interface{}) reflect.Value {

@@ -5,6 +5,17 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Test: EC2",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "${workspaceFolder}",
+      "args": [
+        "-test.run",
+        "TestEc2RunInstances"
+      ]
+    },
+    {
       "name": "Run",
       "type": "go",
       "request": "launch",
